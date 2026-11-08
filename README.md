@@ -1,10 +1,11 @@
-# CS184/284A Fall 2026 Homework 3 Write-Up
+# Homework 3: PathTracer
 
-This is the starter repository for the public Homework 3 write-up website.
+Charles Xu · CS184/284A, Fall 2026
 
-- Edit `index.html` with your names, links, explanations, and results.
-- Add result images under `assets/` and reference them with relative paths.
-- Repo184 enables GitHub Pages from the repository root automatically.
-- Follow the course homework instructions for the required content and Gradescope submission.
+- `index.html`: report, with local styles and relative image paths.
+- `images/`: original renderer output at 480 × 360.
+- `output/pdf/hw3-writeup.pdf`: print version for Gradescope.
 
-The generated student repository and website are public. Do not commit assignment code, credentials, solutions for other assignments, or other private material here.
+The report covers the five required parts and includes an AI acknowledgement.
+Render commands and implementation code are kept in the separate private code
+repository. GitHub Pages is configured to publish from this repository's root.

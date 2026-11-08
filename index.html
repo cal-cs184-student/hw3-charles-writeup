@@ -1,106 +1,745 @@
-<html>
-	<head>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-		<style>
-			h1 {
-				text-align: center;
-			}
+<!doctype html>
+<html lang="en">
 
-			.container {
-				margin: 0 auto;
-				padding: 60px 20%;
-			}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Charles Xu | HW3 PathTracer</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
 
-			figure {
-				text-align: center;
-			}
+        body {
+            margin: 0;
+            color: #262630;
+            background: #f4f3f0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            line-height: 1.48
+        }
 
-			img {
-				display: inline-block;
-			}
+        main {
+            max-width: 1030px;
+            margin: 40px auto;
+            background: white;
+            padding: 45px 64px
+        }
 
-			body {
-				font-family: 'Inter', sans-serif;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-		<h1>CS184/284A Fall 2026 Homework 3 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+        .page {
+            padding: 0 0 35px;
+            margin: 0 0 35px;
+            border-bottom: 1px solid #ddd
+        }
 
-		<br>
+        h1,
+        h2,
+        h3 {
+            color: #482832;
+            line-height: 1.2
+        }
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/fa26">cs184.eecs.berkeley.edu/fa26</a>
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/fa26">cs184.eecs.berkeley.edu/fa26</a>
-		
-		<figure>
-			<img src="assets/cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
+        h1 {
+            font-family: Georgia, serif;
+            font-weight: normal;
+            font-size: 42px;
+            margin: 4px 0 14px
+        }
 
-		<!--
-		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
+        h2 {
+            font-size: 23px;
+            margin: 25px 0 12px
+        }
 
-		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+        h3 {
+            font-size: 16px;
+            margin: 20px 0 8px
+        }
 
-		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        p {
+            margin: 9px 0 12px
+        }
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		
-		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        .eyebrow,
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: #706367;
+            font-weight: bold
+        }
 
-		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        .author {
+            font-size: 19px
+        }
 
-		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        .links,
+        .sources {
+            font-size: 12px
+        }
 
-		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        a {
+            color: #70414e;
+            text-decoration: none
+        }
 
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
-		</div>
-	</body>
+        a:hover {
+            text-decoration: underline
+        }
+
+        code {
+            font-size: .9em;
+            background: #f5f2f3;
+            padding: 1px 3px;
+            border-radius: 3px
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+            align-items: start;
+            margin: 15px 0
+        }
+
+        .two {
+            grid-template-columns: repeat(2, 1fr)
+        }
+
+        .three {
+            grid-template-columns: repeat(3, 1fr)
+        }
+
+        figure {
+            margin: 15px auto;
+            max-width: 100%;
+            break-inside: avoid
+        }
+
+        .grid figure {
+            margin: 0
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: black;
+            border: 1px solid #e0d8dc
+        }
+
+        figcaption {
+            font-size: 11px;
+            line-height: 1.3;
+            padding-top: 6px;
+            color: #59515a
+        }
+
+        .equation {
+            text-align: center;
+            background: #f6f3f4;
+            padding: 11px;
+            margin: 13px 0;
+            font-family: Georgia, serif;
+            font-size: 17px
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+            margin: 14px 0
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd
+        }
+
+        th {
+            background: #f6f3f4
+        }
+
+        header {
+            margin-bottom: 22px
+        }
+
+        section:nth-child(2)>figure {
+            max-width: 540px
+        }
+
+        .boundary-subdivision>figure {
+            max-width: 430px
+        }
+
+        @media(max-width:720px) {
+            main {
+                margin: 0;
+                padding: 24px
+            }
+
+            .three {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            h1 {
+                font-size: 32px
+            }
+        }
+
+        @page {
+            size: letter;
+            margin: 0.45in 0.5in 0.45in
+        }
+
+        @media print {
+            body {
+                background: white;
+                font-size: 10.5pt;
+                line-height: 1.38;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact
+            }
+
+            main {
+                max-width: none;
+                margin: 0;
+                padding: 0
+            }
+
+            .page {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                break-after: page
+            }
+
+            .page:last-child {
+                break-after: auto
+            }
+
+            h1 {
+                font-size: 28pt
+            }
+
+            h2 {
+                font-size: 16pt;
+                margin: 16px 0 9px
+            }
+
+            h3 {
+                font-size: 12pt;
+                margin: 13px 0 6px
+            }
+
+            p {
+                margin: 6px 0 9px
+            }
+
+            .grid {
+                gap: 12px;
+                margin: 11px 0
+            }
+
+            .three {
+                grid-template-columns: repeat(3, 1fr)
+            }
+
+            figcaption {
+                font-size: 8pt
+            }
+
+            figure {
+                margin: 10px auto
+            }
+
+            .equation {
+                padding: 7px;
+                margin: 9px 0;
+                font-size: 12pt
+            }
+
+            table {
+                font-size: 9pt;
+                margin: 9px 0
+            }
+
+            td,
+            th {
+                padding: 6px 8px
+            }
+
+            .links,
+            .sources {
+                font-size: 8.5pt
+            }
+
+            header {
+                margin-bottom: 14px
+            }
+
+            section:nth-child(2)>figure {
+                max-width: 395px
+            }
+
+            .boundary-subdivision>figure {
+                max-width: 315px
+            }
+        }
+
+        .hero {
+            max-width: 480px
+        }
+
+        .compact {
+            max-width: 345px
+        }
+
+        .three figure {
+            min-width: 0
+        }
+
+        @media print {
+            .hero {
+                max-width: 430px
+            }
+
+            .compact {
+                max-width: 300px
+            }
+
+            .page {
+                break-inside: avoid
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section class="page">
+            <header>
+                <div class="eyebrow">CS184 / 284A · FALL 2026</div>
+                <h1>Homework 3: PathTracer</h1>
+                <div class="author">Charles Xu</div>
+                <div class="links">Webpage: <a
+                        href="https://cal-cs184-student.github.io/hw3-charles-writeup/">cal-cs184-student.github.io/hw3-charles-writeup/</a>
+                </div>
+            </header>
+            <h2>Overview</h2>
+            <p>I built a path tracer that follows rays from the camera into a scene and estimates how much light reaches
+                each pixel. The main pieces are ray intersections, a BVH to speed up those intersections, direct and
+                indirect lighting, and adaptive sampling. Together, they let the renderer produce shadows and light that
+                reflects between surfaces.</p>
+            <p>The biggest difference from the earlier assignments is that the image improves as more random samples are
+                averaged. Adding more light bounces changes the lighting itself, while adding more samples makes that
+                lighting less noisy. The Cornell box makes this distinction easy to see: indirect light brightens the
+                shadows and carries some of the wall colors onto nearby surfaces.</p>
+            <figure class="hero"><a href="images/samples-1024.png"><img width="480" height="360"
+                        src="images/samples-1024.png" alt="Bunny with global illumination."></a>
+                <figcaption>Bunny with global illumination.</figcaption>
+            </figure>
+        </section>
+        <section class="page">
+            <h2>Part 1: Ray generation and intersections</h2>
+            <p>For each pixel, I choose random sample positions inside it and convert them to coordinates between 0 and
+                1. The camera maps each position onto a plane in front of it using the horizontal and vertical field of
+                view. I then rotate the direction into world space, normalize it, and start the ray at the camera
+                position. Averaging the returned colors gives the final pixel color.</p>
+            <p>To intersect a triangle, I write its surface as A + u(B − A) + v(C − A) and solve for where it meets the
+                ray. This gives the distance along the ray and the two weights u and v. The hit is inside the triangle
+                when u and v are nonnegative and u + v is at most 1. I also check that the distance is within the ray’s
+                allowed range. The same weights interpolate the vertex normals for shading.</p>
+            <p>For a sphere, substituting the ray into the sphere equation gives a quadratic. I choose the closest root
+                in the allowed range, using the farther root if the ray starts inside the sphere. Each accepted hit
+                shortens the ray’s maximum distance, so later tests can only replace it with a closer hit. I also
+                widened the camera view for the standalone meshes after the initial renders cut off parts of the models.
+            </p>
+            <div class="grid two">
+                <figure class=""><a href="images/normal-cube.png"><img width="480" height="360"
+                            src="images/normal-cube.png" alt="Cube."></a>
+                    <figcaption>Cube.</figcaption>
+                </figure>
+                <figure class=""><a href="images/normal-plane.png"><img width="480" height="360"
+                            src="images/normal-plane.png" alt="Plane."></a>
+                    <figcaption>Plane.</figcaption>
+                </figure>
+            </div>
+            <figure class="compact"><a href="images/normal-CBspheres_lambertian.png"><img width="480" height="360"
+                        src="images/normal-CBspheres_lambertian.png"
+                        alt="Spheres and Cornell box, colored by surface normal."></a>
+                <figcaption>Spheres and Cornell box, colored by surface normal.</figcaption>
+            </figure>
+        </section>
+        <section class="page">
+            <h2>Part 2: Bounding volume hierarchy</h2>
+            <p>The BVH groups nearby objects inside bounding boxes. To build it, I find the box containing all the
+                objects and choose the axis along which their centers spread out the most. I split the objects at the
+                median center on that axis and repeat for each half. Once a group has at most four objects, it becomes a
+                leaf. Using the median keeps the groups balanced, including when several objects have the same center.
+            </p>
+            <p>For each ray, I find the interval where it is inside the box along each of the three axes. If these
+                intervals do not overlap, the ray misses the whole group. Otherwise, I visit the children and eventually
+                test the objects in the leaves. For the closest hit, I visit the nearer child first. For a shadow ray, I
+                can stop as soon as anything blocks the light.</p>
+            <div class="grid three">
+                <figure class=""><a href="images/normal-maxplanck.png"><img width="480" height="360"
+                            src="images/normal-maxplanck.png" alt="Max Planck."></a>
+                    <figcaption>Max Planck.</figcaption>
+                </figure>
+                <figure class=""><a href="images/normal-beast.png"><img width="480" height="360"
+                            src="images/normal-beast.png" alt="Beast."></a>
+                    <figcaption>Beast.</figcaption>
+                </figure>
+                <figure class=""><a href="images/normal-CBdragon.png"><img width="480" height="360"
+                            src="images/normal-CBdragon.png" alt="Dragon in the Cornell box."></a>
+                    <figcaption>Dragon in the Cornell box.</figcaption>
+                </figure>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scene</th>
+                        <th>Without BVH</th>
+                        <th>With BVH</th>
+                        <th>Speedup</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cow</td>
+                        <td>2.32 s</td>
+                        <td>0.22 s</td>
+                        <td>10.3×</td>
+                    </tr>
+                    <tr>
+                        <td>Beetle</td>
+                        <td>2.71 s</td>
+                        <td>0.23 s</td>
+                        <td>11.9×</td>
+                    </tr>
+                    <tr>
+                        <td>Teapot</td>
+                        <td>1.44 s</td>
+                        <td>0.24 s</td>
+                        <td>5.9×</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>These timings use normal shading, one sample per pixel, one thread, and 480 × 360 images. The BVH gives
+                the same images while taking about 6 to 12 times less rendering time. It avoids testing most triangles
+                for each ray, which matters much more than the small cost of checking the boxes. The timings measure
+                rendering, rather than loading the scene or building the tree.</p>
+        </section>
+        <section class="page">
+            <h2>Part 3: Direct illumination</h2>
+            <p>For a diffuse material, I use its reflectance divided by π as the material response. The first lighting
+                method samples random directions uniformly over the hemisphere above the surface. I trace each direction
+                and use the emitted light from the first surface it hits. The contribution is multiplied by the
+                surface’s diffuse reflectance and the cosine of the angle to the normal. I divide by the sampling
+                probability and average the samples.</p>
+            <p>The second method samples the lights directly. For each sampled light position, I trace a shadow ray and
+                check whether another object is in the way. If the light is visible and above the surface, I add its
+                contribution with the same reflectance and cosine factors, divided by the probability of that light
+                sample. Point lights only need one sample because their position does not change.</p>
+            <div class="grid two">
+                <figure class=""><a href="images/direct-CBbunny-hemisphere.png"><img width="480" height="360"
+                            src="images/direct-CBbunny-hemisphere.png" alt="Bunny: hemisphere sampling."></a>
+                    <figcaption>Bunny: hemisphere sampling.</figcaption>
+                </figure>
+                <figure class=""><a href="images/direct-CBbunny-light.png"><img width="480" height="360"
+                            src="images/direct-CBbunny-light.png" alt="Bunny: light sampling."></a>
+                    <figcaption>Bunny: light sampling.</figcaption>
+                </figure>
+                <figure class=""><a href="images/direct-CBspheres_lambertian-hemisphere.png"><img width="480"
+                            height="360" src="images/direct-CBspheres_lambertian-hemisphere.png"
+                            alt="Spheres: hemisphere sampling."></a>
+                    <figcaption>Spheres: hemisphere sampling.</figcaption>
+                </figure>
+                <figure class=""><a href="images/direct-CBspheres_lambertian-light.png"><img width="480" height="360"
+                            src="images/direct-CBspheres_lambertian-light.png" alt="Spheres: light sampling."></a>
+                    <figcaption>Spheres: light sampling.</figcaption>
+                </figure>
+            </div>
+            <p>Both comparisons use 64 samples per pixel and 4 samples per light, with one bounce. Light sampling is
+                much smoother at these settings. Most random hemisphere directions miss the small ceiling light, so many
+                samples contribute nothing and a few contribute a lot. Sampling the light directly uses the samples more
+                efficiently, especially around the soft shadows. There is also a difference around the ceiling light
+                because the supplied light and its visible surface are handled differently by the two methods.</p>
+        </section>
+        <section class="page">
+            <h2>Part 3: Light samples and soft shadows</h2>
+            <p>Here I kept one camera sample per pixel and increased the number of light samples. The camera, scene, and
+                maximum depth stay the same. All four images use light sampling.</p>
+            <div class="grid two">
+                <figure class=""><a href="images/shadow-1.png"><img width="480" height="360" src="images/shadow-1.png"
+                            alt="1 light sample."></a>
+                    <figcaption>1 light sample.</figcaption>
+                </figure>
+                <figure class=""><a href="images/shadow-4.png"><img width="480" height="360" src="images/shadow-4.png"
+                            alt="4 light samples."></a>
+                    <figcaption>4 light samples.</figcaption>
+                </figure>
+                <figure class=""><a href="images/shadow-16.png"><img width="480" height="360" src="images/shadow-16.png"
+                            alt="16 light samples."></a>
+                    <figcaption>16 light samples.</figcaption>
+                </figure>
+                <figure class=""><a href="images/shadow-64.png"><img width="480" height="360" src="images/shadow-64.png"
+                            alt="64 light samples."></a>
+                    <figcaption>64 light samples.</figcaption>
+                </figure>
+            </div>
+            <p>With one light sample, the shadow boundary is very grainy: a pixel often sees either a blocked or an
+                unblocked sample. More light samples average over different points on the area light, so the shadow
+                becomes a smoother transition. The largest change is from 1 to 4 samples, but 16 and 64 continue to
+                reduce the noise. The object’s outline can still look rough because there is only one camera sample per
+                pixel.</p>
+        </section>
+        <section class="page">
+            <h2>Part 4: Global illumination</h2>
+            <p>Indirect lighting comes from light that has already reflected off another surface. At each hit, I choose
+                a new direction above the surface, favoring directions closer to its normal. I trace another ray and
+                recursively estimate the light arriving from the next surface. I multiply the result by the material
+                response and the cosine, then divide by the sampling probability. The new ray starts just beyond the
+                current hit so it does not immediately hit the same surface again.</p>
+            <p>When accumulation is enabled, I add direct lighting at each bounce. When it is disabled, I only keep the
+                contribution at the requested depth. A depth of zero shows the light source itself, and a depth of one
+                adds direct lighting. I keep these separate so emitted light is not counted again at every indirect
+                bounce.</p>
+            <div class="grid two">
+                <figure class=""><a href="images/samples-1024.png"><img width="480" height="360"
+                            src="images/samples-1024.png" alt="Bunny."></a>
+                    <figcaption>Bunny.</figcaption>
+                </figure>
+                <figure class=""><a href="images/global-spheres.png"><img width="480" height="360"
+                            src="images/global-spheres.png" alt="Diffuse spheres."></a>
+                    <figcaption>Diffuse spheres.</figcaption>
+                </figure>
+            </div>
+            <p>Both images use 1024 samples per pixel and a maximum depth of 5. The bunny uses 4 light samples and the
+                spheres use 1. Indirect light makes the shaded surfaces visible and gives the objects a stronger
+                connection to the surrounding room. The red and blue walls also tint nearby surfaces.</p>
+        </section>
+        <section class="page">
+            <h2>Part 4: Direct and indirect light</h2>
+            <p>For this comparison, I separated the direct contribution from the indirect contribution. Both images use
+                1024 samples per pixel and 1 sample per light. The indirect image includes bounces 2 through 5; the
+                directly visible light source is excluded from that image.</p>
+            <div class="grid two">
+                <figure class=""><a href="images/accum-1.png"><img width="480" height="360" src="images/accum-1.png"
+                            alt="Only direct light."></a>
+                    <figcaption>Only direct light.</figcaption>
+                </figure>
+                <figure class=""><a href="images/indirect-bunny.png"><img width="480" height="360"
+                            src="images/indirect-bunny.png" alt="Only indirect light."></a>
+                    <figcaption>Only indirect light.</figcaption>
+                </figure>
+            </div>
+            <p>Direct light gives the strongest highlights and the main shadow on the floor, but the underside of the
+                bunny and the shadowed parts of its face are very dark. Indirect light reaches those areas after
+                reflecting off the floor and walls. It is weaker overall, but it fills in the dark regions and brings
+                the wall colors into the scene. Adding these contributions gives a less harsh result than direct
+                lighting alone.</p>
+        </section>
+        <section class="page">
+            <h2>Part 4: Individual light bounces</h2>
+            <p>These images show only the requested bounce, with accumulation and Russian roulette turned off. All use
+                1024 samples per pixel and 1 light sample.</p>
+            <div class="grid three">
+                <figure class=""><a href="images/bounce-0.png"><img width="480" height="360" src="images/bounce-0.png"
+                            alt="Bounce 0."></a>
+                    <figcaption>Bounce 0.</figcaption>
+                </figure>
+                <figure class=""><a href="images/bounce-1.png"><img width="480" height="360" src="images/bounce-1.png"
+                            alt="Bounce 1."></a>
+                    <figcaption>Bounce 1.</figcaption>
+                </figure>
+                <figure class=""><a href="images/bounce-2.png"><img width="480" height="360" src="images/bounce-2.png"
+                            alt="Bounce 2."></a>
+                    <figcaption>Bounce 2.</figcaption>
+                </figure>
+                <figure class=""><a href="images/bounce-3.png"><img width="480" height="360" src="images/bounce-3.png"
+                            alt="Bounce 3."></a>
+                    <figcaption>Bounce 3.</figcaption>
+                </figure>
+                <figure class=""><a href="images/bounce-4.png"><img width="480" height="360" src="images/bounce-4.png"
+                            alt="Bounce 4."></a>
+                    <figcaption>Bounce 4.</figcaption>
+                </figure>
+                <figure class=""><a href="images/bounce-5.png"><img width="480" height="360" src="images/bounce-5.png"
+                            alt="Bounce 5."></a>
+                    <figcaption>Bounce 5.</figcaption>
+                </figure>
+            </div>
+            <p>Bounce 0 shows only the light source, while bounce 1 is direct illumination. The second bounce spreads
+                light from the directly lit surfaces into the shadowed parts of the bunny and the room. The colored
+                walls begin to affect the floor and the bunny. The third bounce carries that light farther and fills in
+                more of the remaining dark areas, although its contribution is weaker.</p>
+            <p>The later bounces become darker because some light is absorbed at every reflection. These extra paths
+                explain why global illumination looks different from the local shading used in a basic rasterizer: a
+                surface can be lit by other surfaces, even when it cannot see the light source directly.</p>
+        </section>
+        <section class="page">
+            <h2>Part 4: Accumulated light bounces</h2>
+            <p>Here I keep all contributions up to the indicated depth. These use the same settings as the
+                individual-bounce images, again without Russian roulette.</p>
+            <div class="grid three">
+                <figure class=""><a href="images/accum-0.png"><img width="480" height="360" src="images/accum-0.png"
+                            alt="Up to bounce 0."></a>
+                    <figcaption>Up to bounce 0.</figcaption>
+                </figure>
+                <figure class=""><a href="images/accum-1.png"><img width="480" height="360" src="images/accum-1.png"
+                            alt="Up to bounce 1."></a>
+                    <figcaption>Up to bounce 1.</figcaption>
+                </figure>
+                <figure class=""><a href="images/accum-2.png"><img width="480" height="360" src="images/accum-2.png"
+                            alt="Up to bounce 2."></a>
+                    <figcaption>Up to bounce 2.</figcaption>
+                </figure>
+                <figure class=""><a href="images/accum-3.png"><img width="480" height="360" src="images/accum-3.png"
+                            alt="Up to bounce 3."></a>
+                    <figcaption>Up to bounce 3.</figcaption>
+                </figure>
+                <figure class=""><a href="images/accum-4.png"><img width="480" height="360" src="images/accum-4.png"
+                            alt="Up to bounce 4."></a>
+                    <figcaption>Up to bounce 4.</figcaption>
+                </figure>
+                <figure class=""><a href="images/accum-5.png"><img width="480" height="360" src="images/accum-5.png"
+                            alt="Up to bounce 5."></a>
+                    <figcaption>Up to bounce 5.</figcaption>
+                </figure>
+            </div>
+            <p>Compared with the individual-bounce images, these become brighter as more contributions are added. Going
+                from depth 1 to depth 2 makes the largest visible difference to the dark parts of the bunny. Depth 3
+                adds more fill light and color bleeding. The changes from depth 4 to depth 5 are smaller, since the
+                later bounces carry less energy.</p>
+            <p>The two sets show different things: an individual-bounce image isolates where that extra light goes,
+                while an accumulated image shows how it improves the final result.</p>
+        </section>
+        <section class="page">
+            <h2>Part 4: Russian roulette</h2>
+            <p>Tracing every path to a very large depth is expensive. After the first indirect bounce, I give each path
+                a 35% chance of stopping. A surviving path’s contribution is divided by 0.65 to compensate for the paths
+                that stopped. This keeps the expected contribution the same instead of making the image systematically
+                darker. If indirect lighting is enabled, the first indirect bounce is always traced.</p>
+            <p>These images use accumulation, Russian roulette, 1024 samples per pixel, and 1 light sample. The maximum
+                depths are 0, 1, 2, 3, 4, and 100.</p>
+            <div class="grid three">
+                <figure class=""><a href="images/roulette-0.png"><img width="480" height="360"
+                            src="images/roulette-0.png" alt="Maximum depth 0."></a>
+                    <figcaption>Maximum depth 0.</figcaption>
+                </figure>
+                <figure class=""><a href="images/roulette-1.png"><img width="480" height="360"
+                            src="images/roulette-1.png" alt="Maximum depth 1."></a>
+                    <figcaption>Maximum depth 1.</figcaption>
+                </figure>
+                <figure class=""><a href="images/roulette-2.png"><img width="480" height="360"
+                            src="images/roulette-2.png" alt="Maximum depth 2."></a>
+                    <figcaption>Maximum depth 2.</figcaption>
+                </figure>
+                <figure class=""><a href="images/roulette-3.png"><img width="480" height="360"
+                            src="images/roulette-3.png" alt="Maximum depth 3."></a>
+                    <figcaption>Maximum depth 3.</figcaption>
+                </figure>
+                <figure class=""><a href="images/roulette-4.png"><img width="480" height="360"
+                            src="images/roulette-4.png" alt="Maximum depth 4."></a>
+                    <figcaption>Maximum depth 4.</figcaption>
+                </figure>
+                <figure class=""><a href="images/roulette-100.png"><img width="480" height="360"
+                            src="images/roulette-100.png" alt="Maximum depth 100."></a>
+                    <figcaption>Maximum depth 100.</figcaption>
+                </figure>
+            </div>
+            <p>The depth-100 result includes longer paths, but it does not look dramatically different from the
+                lower-depth global-illumination images. Most of the visible light arrives in the first few bounces, and
+                many paths stop early. Russian roulette avoids spending the same amount of work on every long path, at
+                the cost of some extra noise.</p>
+        </section>
+        <section class="page">
+            <h2>Part 4: Samples per pixel</h2>
+            <p>This series uses 4 light samples and a maximum depth of 5, with Russian roulette enabled. Adaptive
+                sampling is disabled so every pixel uses the listed number of samples.</p>
+            <div class="grid three">
+                <figure class=""><a href="images/samples-1.png"><img width="480" height="360" src="images/samples-1.png"
+                            alt="1 sample per pixel."></a>
+                    <figcaption>1 sample per pixel.</figcaption>
+                </figure>
+                <figure class=""><a href="images/samples-2.png"><img width="480" height="360" src="images/samples-2.png"
+                            alt="2 samples per pixel."></a>
+                    <figcaption>2 samples per pixel.</figcaption>
+                </figure>
+                <figure class=""><a href="images/samples-4.png"><img width="480" height="360" src="images/samples-4.png"
+                            alt="4 samples per pixel."></a>
+                    <figcaption>4 samples per pixel.</figcaption>
+                </figure>
+                <figure class=""><a href="images/samples-8.png"><img width="480" height="360" src="images/samples-8.png"
+                            alt="8 samples per pixel."></a>
+                    <figcaption>8 samples per pixel.</figcaption>
+                </figure>
+                <figure class=""><a href="images/samples-16.png"><img width="480" height="360"
+                            src="images/samples-16.png" alt="16 samples per pixel."></a>
+                    <figcaption>16 samples per pixel.</figcaption>
+                </figure>
+                <figure class=""><a href="images/samples-64.png"><img width="480" height="360"
+                            src="images/samples-64.png" alt="64 samples per pixel."></a>
+                    <figcaption>64 samples per pixel.</figcaption>
+                </figure>
+            </div>
+            <figure class="compact"><a href="images/samples-1024.png"><img width="480" height="360"
+                        src="images/samples-1024.png" alt="1024 samples per pixel."></a>
+                <figcaption>1024 samples per pixel.</figcaption>
+            </figure>
+            <p>At 1 or 2 samples, the indirect lighting is very noisy and the surface colors are hard to judge. The
+                bunny and its shadow become clearer at 8 and 16 samples. At 64 samples the overall lighting is stable,
+                but grain is still visible. The 1024-sample result is much smoother. More samples reduce the noise
+                without changing which light paths the renderer is trying to estimate.</p>
+        </section>
+        <section class="page">
+            <h2>Part 5: Adaptive sampling</h2>
+            <p>Different pixels need different numbers of samples. A smooth, evenly lit region may settle quickly, while
+                a shadow boundary or a region lit by indirect light can vary much more. Adaptive sampling checks each
+                pixel as it is rendered and stops early once its estimated brightness is stable enough.</p>
+            <p>I keep the sum of the sample brightnesses and the sum of their squares. From these, I compute the mean
+                and sample variance. Every 64 samples, I estimate the uncertainty as 1.96σ/√n. If this is at most 5% of
+                the mean, I stop sampling that pixel. Otherwise, I continue until it converges or reaches the limit. The
+                final color is divided by the actual sample count, which is also saved for the sample-rate image.</p>
+            <div class="grid two">
+                <figure class=""><a href="images/adaptive-CBbunny.png"><img width="480" height="360"
+                            src="images/adaptive-CBbunny.png" alt="Bunny with adaptive sampling."></a>
+                    <figcaption>Bunny with adaptive sampling.</figcaption>
+                </figure>
+                <figure class=""><a href="images/adaptive-CBbunny_rate.png"><img width="480" height="360"
+                            src="images/adaptive-CBbunny_rate.png" alt="Bunny sample rates."></a>
+                    <figcaption>Bunny sample rates.</figcaption>
+                </figure>
+            </div>
+            <p>This render allows up to 2048 samples per pixel, with 1 light sample and a maximum depth of 5. Blue means
+                fewer samples and red means more. The directly visible light and simpler regions can stop early, while
+                the bunny, the darker floor regions, and shadow boundaries generally need more work. The ceiling also
+                needs many samples because it is mostly lit indirectly. The result is much smoother than the low-sample
+                images without using the full limit everywhere.</p>
+        </section>
+        <section class="page">
+            <h2>Part 5: A second scene</h2>
+            <div class="grid two">
+                <figure class=""><a href="images/adaptive-CBspheres_lambertian.png"><img width="480" height="360"
+                            src="images/adaptive-CBspheres_lambertian.png" alt="Spheres with adaptive sampling."></a>
+                    <figcaption>Spheres with adaptive sampling.</figcaption>
+                </figure>
+                <figure class=""><a href="images/adaptive-CBspheres_lambertian_rate.png"><img width="480" height="360"
+                            src="images/adaptive-CBspheres_lambertian_rate.png" alt="Sphere sample rates."></a>
+                    <figcaption>Sphere sample rates.</figcaption>
+                </figure>
+            </div>
+            <p>The sphere scene uses the same settings: up to 2048 samples per pixel, batches of 64, 5% tolerance, 1
+                light sample, and a maximum depth of 5. The sample-rate image shows the extra work around the spheres
+                and their shadows. The lower halves of the spheres take more samples than their brightly lit tops. Broad
+                areas with more consistent lighting need fewer samples. This makes the sampling pattern follow the
+                difficulty of the lighting rather than assigning the same effort to the entire image.</p>
+            <p>The stopping rule is still an estimate from the samples seen so far. It can leave some noise, especially
+                in difficult dark regions, so convergence does not mean the pixel is exact.</p>
+        </section>
+    </main>
+</body>
+
 </html>
